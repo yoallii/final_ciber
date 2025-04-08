@@ -1,0 +1,463 @@
+<html>
+<head>
+    <title>Wazuh App - Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+    <h1>Wazuh Dashboard</h1>
+    <p>Bienvenido a la aplicación de ciberseguridad con Wazuh. <a href="{{ url_for('logout') }}">Cerrar sesión</a></p>
+
+    <div class="section" id="vulnerabilities_by_severity">
+        <h2>Vulnerabilidades por severidad</h2>
+        <form method="POST">
+            <input type="hidden" name="action" value="vulnerabilities_by_severity">
+            <select name="severity">
+                <option value="Critical">Críticas</option>
+                <option value="High">Altas</option>
+                <option value="Medium">Medias</option>
+                <option value="Low">Bajas</option>
+            </select>
+            <input type="number" name="limit" min="1" max="100" value="10" placeholder="Número de resultados" required>
+            <input type="submit" value="Consultar">
+        </form>
+        {% if results.vulnerabilities_by_severity %}
+            <div class="result-section">
+                <h3>{{ results.vulnerabilities_by_severity.title }}</h3>
+                {% if results.vulnerabilities_by_severity.error %}
+                    <p class="error">{{ results.vulnerabilities_by_severity.error }}</p>
+                {% elif results.vulnerabilities_by_severity.data %}
+                    <table>
+                        <tr>
+                            <th>Agente ID</th>
+                            <th>Título</th>
+                            <th>CVE</th>
+                            <th>Severidad</th>
+                            <th>Fecha</th>
+                        </tr>
+                        {% for item in results.vulnerabilities_by_severity.data %}
+                            <tr>
+                                <td>{{ item.agent_id }}</td>
+                                <td>{{ item.title }}</td>
+                                <td>{{ item.cve }}</td>
+                                <td>{{ item.severity }}</td>
+                                <td>{{ item.timestamp }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="section" id="vulnerabilities_by_keyword">
+        <h2>Vulnerabilidades por palabra clave</h2>
+        <form method="POST">
+            <input type="hidden" name="action" value="vulnerabilities_by_keyword">
+            <input type="text" name="keyword" placeholder="Ej: Chrome" required>
+            <input type="number" name="limit" min="1" max="100" value="10" placeholder="Número de resultados" required>
+            <input type="submit" value="Buscar">
+        </form>
+        {% if results.vulnerabilities_by_keyword %}
+            <div class="result-section">
+                <h3>{{ results.vulnerabilities_by_keyword.title }}</h3>
+                {% if results.vulnerabilities_by_keyword.error %}
+                    <p class="error">{{ results.vulnerabilities_by_keyword.error }}</p>
+                {% elif results.vulnerabilities_by_keyword.data %}
+                    <table>
+                        <tr>
+                            <th>Agente ID</th>
+                            <th>Título</th>
+                            <th>CVE</th>
+                            <th>Severidad</th>
+                            <th>Fecha</th>
+                        </tr>
+                        {% for item in results.vulnerabilities_by_keyword.data %}
+                            <tr>
+                                <td>{{ item.agent_id }}</td>
+                                <td>{{ item.title }}</td>
+                                <td>{{ item.cve }}</td>
+                                <td>{{ item.severity }}</td>
+                                <td>{{ item.timestamp }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="section" id="agent_action">
+        <h2>Gestionar agente</h2>
+        <form method="POST">
+            <input type="hidden" name="action" value="agent_action">
+            <input type="text" name="agent_id" placeholder="ID del agente" required>
+            <select name="operation">
+                <option value="upgrade">Actualizar</option>
+                <option value="restart">Reiniciar</option>
+                <option value="delete">Borrar</option>
+            </select>
+            <input type="submit" value="Ejecutar">
+        </form>
+        {% if results.agent_action %}
+            <div class="result-section">
+                {% if results.agent_action.error %}
+                    <p class="error">{{ results.agent_action.error }}</p>
+                {% elif results.agent_action.message %}
+                    <p>{{ results.agent_action.message }}</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="section" id="common_vulnerability">
+        <h2>Equipos con vulnerabilidad común</h2>
+        <form method="POST">
+            <input type="hidden" name="action" value="common_vulnerability">
+            <input type="text" name="cve" placeholder="Ej: CVE-2016-0025" required>
+            <input type="submit" value="Consultar">
+        </form>
+        {% if results.common_vulnerability %}
+            <div class="result-section">
+                <h3>{{ results.common_vulnerability.title }}</h3>
+                {% if results.common_vulnerability.error %}
+                    <p class="error">{{ results.common_vulnerability.error }}</p>
+                {% elif results.common_vulnerability.data %}
+                    <table>
+                        <tr>
+                            <th>Agente ID</th>
+                            <th>Título</th>
+                            <th>CVE</th>
+                            <th>Severidad</th>
+                            <th>Fecha</th>
+                        </tr>
+                        {% for item in results.common_vulnerability.data %}
+                            <tr>
+                                <td>{{ item.agent_id }}</td>
+                                <td>{{ item.title }}</td>
+                                <td>{{ item.cve }}</td>
+                                <td>{{ item.severity }}</td>
+                                <td>{{ item.timestamp }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="section" id="top10_vulnerabilities">
+        <h2>Top 10 Vulnerabilidades</h2>
+        <form method="POST">
+            <input type="hidden" name="action" value="top10_vulnerabilities">
+            <input type="submit" value="Mostrar">
+        </form>
+        {% if results.top10_vulnerabilities %}
+            <div class="result-section">
+                <h3>{{ results.top10_vulnerabilities.title }}</h3>
+                {% if results.top10_vulnerabilities.error %}
+                    <p class="error">{{ results.top10_vulnerabilities.error }}</p>
+                {% elif results.top10_vulnerabilities.data %}
+                    <table>
+                        <tr>
+                            <th>Agente ID</th>
+                            <th>Título</th>
+                            <th>CVE</th>
+                            <th>Severidad</th>
+                            <th>Fecha</th>
+                        </tr>
+                        {% for item in results.top10_vulnerabilities.data %}
+                            <tr>
+                                <td>{{ item.agent_id }}</td>
+                                <td>{{ item.title }}</td>
+                                <td>{{ item.cve }}</td>
+                                <td>{{ item.severity }}</td>
+                                <td>{{ item.timestamp }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="section" id="top10_agents">
+        <h2>Top 10 Agentes</h2>
+        <form method="POST">
+            <input type="hidden" name="action" value="top10_agents">
+            <input type="submit" value="Mostrar">
+        </form>
+        {% if results.top10_agents %}
+            <div class="result-section">
+                <h3>{{ results.top10_agents.title }}</h3>
+                {% if results.top10_agents.error %}
+                    <p class="error">{{ results.top10_agents.error }}</p>
+                {% elif results.top10_agents.data %}
+                    <table>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Número de Vulnerabilidades</th>
+                        </tr>
+                        {% for item in results.top10_agents.data %}
+                            <tr>
+                                <td>{{ item.id }}</td>
+                                <td>{{ item.name }}</td>
+                                <td>{{ item.vulnerability_count }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="section" id="server_status">
+        <h2>Estado del servidor</h2>
+        <form method="POST">
+            <input type="hidden" name="action" value="server_status">
+            <select name="status_type" required>
+                <option value="configuration">Configuración</option>
+                <option value="logs">Últimos logs</option>
+                <option value="log_summary">Resumen de logs</option>
+                <option value="groups">Grupos</option>
+                <option value="tasks">Tareas</option>
+            </select>
+            <input type="submit" value="Consultar">
+        </form>
+        {% if results.server_status %}
+            <div class="result-section">
+                <h3>{{ results.server_status.title }}</h3>
+                {% if results.server_status.error %}
+                    <p class="error">{{ results.server_status.error }}</p>
+                {% elif results.server_status.data %}
+                    {% if results.server_status.title == "Configuración del servidor" %}
+                        <table>
+                            <tr>
+                                <th>Clave</th>
+                                <th>Valor</th>
+                            </tr>
+                            {% for key, value in results.server_status.data %}
+                                <tr>
+                                    <td>{{ key }}</td>
+                                    <td>{{ value }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% elif results.server_status.title == "Últimos logs del servidor" %}
+                        <table>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Nivel</th>
+                                <th>Mensaje</th>
+                            </tr>
+                            {% for log in results.server_status.data %}
+                                <tr>
+                                    <td>{{ log.timestamp }}</td>
+                                    <td>{{ log.level }}</td>
+                                    <td>{{ log.message }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% elif results.server_status.title == "Resumen de logs del servidor" %}
+                        {% if "message" in results.server_status.data %}
+                            <p>{{ results.server_status.data.message }}</p>
+                        {% else %}
+                            <table>
+                                <tr>
+                                    <th>Nivel</th>
+                                    <th>Cantidad</th>
+                                    <th>Última vez</th>
+                                </tr>
+                                {% for level, info in results.server_status.data.items() %}
+                                    <tr>
+                                        <td>{{ level }}</td>
+                                        <td>{{ info.count }}</td>
+                                        <td>{{ info.last }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        {% endif %}
+                    {% elif results.server_status.title == "Grupos del servidor" %}
+                        <table>
+                            <tr>
+                                <th>Nombre del grupo</th>
+                            </tr>
+                            {% for group in results.server_status.data %}
+                                <tr>
+                                    <td>{{ group.name }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% elif results.server_status.title == "Estado de las tareas" %}
+                        <table>
+                            <tr>
+                                <th>ID de Tarea</th>
+                                <th>Estado</th>
+                            </tr>
+                            {% for task in results.server_status.data %}
+                                <tr>
+                                    <td>{{ task.task_id }}</td>
+                                    <td>{{ task.status }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% endif %}
+                {% else %}
+                    <p>No hay datos disponibles</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="section" id="inventory">
+        <h2>Inventario de agente</h2>
+        <form method="POST">
+            <input type="hidden" name="action" value="inventory">
+            <input type="text" name="agent_id" placeholder="ID del agente" required>
+            <select name="inv_type">
+                <option value="hardware">Hardware</option>
+                <option value="hotfixes">Hotfixes</option>
+                <option value="netaddr">Direcciones de red</option>
+                <option value="netiface">Interfaces de red</option>
+                <option value="netproto">Protocolos de red</option>
+                <option value="os">Sistema operativo</option>
+                <option value="packages">Paquetes</option>
+                <option value="ports">Puertos</option>
+                <option value="processes">Procesos</option>
+            </select>
+            <input type="submit" value="Consultar">
+        </form>
+        {% if results.inventory %}
+            <div class="result-section">
+                <h3>{{ results.inventory.title }}</h3>
+                {% if results.inventory.error %}
+                    <p class="error">{{ results.inventory.error }}</p>
+                {% elif results.inventory.data %}
+                    <table>
+                        {% if results.inventory.inv_type == "hardware" %}
+                            <tr>
+                                <th>Serial de placa</th>
+                                <th>CPU</th>
+                                <th>RAM Total</th>
+                            </tr>
+                            {% for item in results.inventory.data %}
+                                <tr>
+                                    <td>{{ item.board_serial }}</td>
+                                    <td>{{ item.cpu_name }}</td>
+                                    <td>{{ item.ram_total }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% elif results.inventory.inv_type == "os" %}
+                            <tr>
+                                <th>Nombre SO</th>
+                                <th>Versión</th>
+                                <th>Arquitectura</th>
+                            </tr>
+                            {% for item in results.inventory.data %}
+                                <tr>
+                                    <td>{{ item.os_name }}</td>
+                                    <td>{{ item.os_version }}</td>
+                                    <td>{{ item.architecture }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% elif results.inventory.inv_type == "packages" %}
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Versión</th>
+                                <th>Descripción</th>
+                            </tr>
+                            {% for item in results.inventory.data %}
+                                <tr>
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ item.version }}</td>
+                                    <td>{{ item.description }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% elif results.inventory.inv_type == "ports" %}
+                            <tr>
+                                <th>IP Local</th>
+                                <th>Puerto Local</th>
+                                <th>Protocolo</th>
+                            </tr>
+                            {% for item in results.inventory.data %}
+                                <tr>
+                                    <td>{{ item.local_ip }}</td>
+                                    <td>{{ item.local_port }}</td>
+                                    <td>{{ item.protocol }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% elif results.inventory.inv_type == "processes" %}
+                            <tr>
+                                <th>PID</th>
+                                <th>Nombre</th>
+                                <th>Estado</th>
+                            </tr>
+                            {% for item in results.inventory.data %}
+                                <tr>
+                                    <td>{{ item.pid }}</td>
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ item.state }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <th>ID</th>
+                                <th>Detalles</th>
+                            </tr>
+                            {% for item in results.inventory.data %}
+                                <tr>
+                                    <td>{{ item.id|default('N/A') }}</td>
+                                    <td>{{ item|tojson|safe }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                    </table>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="section" id="generate_decoder_rule">
+        <h2>Generar Decodificador y Regla</h2>
+        <form method="POST">
+            <input type="hidden" name="action" value="generate_decoder_rule">
+            <label for="syslog_input">Ingresa una cadena syslog o genera una aleatoria:</label><br>
+            <textarea name="syslog_input" rows="4" cols="50" placeholder="Escribe tu log aquí o usa el botón de generar">{{ results.generate_decoder_rule.original_log if results.generate_decoder_rule and results.generate_decoder_rule.original_log else '' }}</textarea><br>
+            <input type="submit" value="Generar desde texto">
+            <input type="submit" name="generate_random" value="Generar log aleatorio">
+        </form>
+
+        <!-- Mostrar resultados -->
+        {% if results.generate_decoder_rule %}
+            <div class="result-section">
+                <h3>{{ results.generate_decoder_rule.title }}</h3>
+                {% if results.generate_decoder_rule.error %}
+                    <p class="error">{{ results.generate_decoder_rule.error }}</p>
+                {% else %}
+                    <p>{{ results.generate_decoder_rule.message }}</p>
+                    {% if results.generate_decoder_rule.generated_log %}
+                        <h4>Log Generado Aleatoriamente:</h4>
+                        <pre>{{ results.generate_decoder_rule.generated_log }}</pre>
+                    {% endif %}
+                    <h4>Log Procesado:</h4>
+                    <pre>{{ results.generate_decoder_rule.original_log }}</pre>
+                    <h4>Decodificador Generado:</h4>
+                    <pre>{{ results.generate_decoder_rule.decoder }}</pre>
+                    <h4>Regla Generada:</h4>
+                    <pre>{{ results.generate_decoder_rule.rule }}</pre>
+                {% endif %}
+            </div>
+        {% else %}
+            <p>Aún no se han generado resultados. Usa el formulario para empezar.</p>
+        {% endif %}
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const section = document.getElementById('{{ active_section }}');
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    </script>
+</body>
+</html>
