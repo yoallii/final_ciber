@@ -390,23 +390,24 @@ def dashboard():
                     message = " ".join(parts[4:])
 
                     decoder_xml = f"""<decoder name="custom_syslog_{hostname}">
-            <prematch>{timestamp} {hostname}</prematch>
-        </decoder>
-        <decoder name="custom_syslog_{hostname}_fields">
-            <parent>custom_syslog_{hostname}</parent>
-            <regex>{message.replace(' ', '\\s+')}</regex>
-            <order>service, pid, level, action, user, source_ip</order>
-        </decoder>"""
-
+                                <prematch>{timestamp} {hostname}</prematch>
+                            </decoder>
+                            <decoder name="custom_syslog_{hostname}_fields">
+                                <parent>custom_syslog_{hostname}</parent>
+                                <regex>{message.replace(' ', '\\\\s+')}</regex>
+                                <order>service, pid, level, action, user, source_ip</order>
+                            </decoder>"""
+                    
                     rule_xml = f"""<group name="custom_syslog_{hostname}">
-            <rule id="100{random.randint(100,999)}" level="3">
-                <decoded_as>custom_syslog_{hostname}</decoded_as>
-                <description>Evento syslog personalizado: {message}</description>
-                <mitre>
-                    <id>T1078</id>
-                </mitre>
-            </rule>
-        </group>"""
+                                <rule id="100{random.randint(100,999)}" level="3">
+                                    <decoded_as>custom_syslog_{hostname}</decoded_as>
+                                    <description>Evento syslog personalizado: {message}</description>
+                                    <mitre>
+                                        <id>T1078</id>
+                                    </mitre>
+                                </rule>
+                            </group>"""
+
 
                     results['generate_decoder_rule'] = {
                         "title": "Resultados Generados",
