@@ -14,14 +14,14 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", os.urandom(24).hex())
 
-# Configuration from .env
+# Configuration from environment variables
 BASE_HOST = os.getenv("BASE_HOST", "54.218.56.253")
 PORT_MANAGER = int(os.getenv("PORT_MANAGER", "55000"))
 PORT_INDEXER = int(os.getenv("PORT_INDEXER", "9200"))
 USERNAME = os.getenv("USERNAME")
 PASSWORD = os.getenv("PASSWORD")
-INDEXER_USERNAME = os.getenv("indexer_username")
-INDEXER_PASSWORD = os.getenv("indexer_password")
+INDEXER_USERNAME = os.getenv("INDEXER_USERNAME")
+INDEXER_PASSWORD = os.getenv("INDEXER_PASSWORD")
 
 BASE_URL_MANAGER = f"https://{BASE_HOST}:{PORT_MANAGER}"
 BASE_URL_INDEXER = f"https://{BASE_HOST}:{PORT_INDEXER}"
@@ -433,4 +433,6 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Use the PORT environment variable provided by Render
+    port = int(os.getenv("PORT", 5000))
+    app.run(debug=False, host='0.0.0.0', port=port)
