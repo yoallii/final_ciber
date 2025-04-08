@@ -389,16 +389,16 @@ def dashboard():
                     hostname = parts[3]
                     message = " ".join(parts[4:])
 
-                    decoder_xml = f"""<decoder name="custom_syslog_{hostname}">
+                    decoder_xml = """<decoder name="custom_syslog_{hostname}">
                                 <prematch>{timestamp} {hostname}</prematch>
                             </decoder>
                             <decoder name="custom_syslog_{hostname}_fields">
                                 <parent>custom_syslog_{hostname}</parent>
-                                <regex>{message.replace(' ', '\\\\s+')}</regex>
+                                <regex>{message.replace(' ', '\\s+')}</regex>
                                 <order>service, pid, level, action, user, source_ip</order>
                             </decoder>"""
                     
-                    rule_xml = f"""<group name="custom_syslog_{hostname}">
+                    rule_xml = """<group name="custom_syslog_{hostname}">
                                 <rule id="100{random.randint(100,999)}" level="3">
                                     <decoded_as>custom_syslog_{hostname}</decoded_as>
                                     <description>Evento syslog personalizado: {message}</description>
@@ -407,6 +407,7 @@ def dashboard():
                                     </mitre>
                                 </rule>
                             </group>"""
+
 
 
                     results['generate_decoder_rule'] = {
