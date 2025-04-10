@@ -159,7 +159,7 @@
                 {% elif results.top10_vulnerabilidades.data %}
                     <table>
                         <tr>
-                            <th>Agente ID</th>
+                           
                             <th>Título</th>
                             <th>CVE</th>
                             <th>Severidad</th>
@@ -167,7 +167,7 @@
                         </tr>
                         {% for item in results.top10_vulnerabilidades.data %}
                             <tr>
-                                <td>{{ item.agent_id }}</td>
+                               
                                 <td>{{ item.title }}</td>
                                 <td>{{ item.cve }}</td>
                                 <td>{{ item.severity }}</td>
